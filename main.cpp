@@ -1,83 +1,129 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-void append()
-{
-  printf("This command is not implemented yet\n");
+typedef struct Node {
+    char value;
+    struct Node* next;
+} Node;
+
+Node* create_node(char chr) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->value = chr;
+    node->next = nullptr;
+    return node;
 }
 
-void start_new_line()
-{
-  printf("This command is not implemented yet\n");
+void insert(Node* parentNode, char chr) {
+    Node* node = create_node(chr);
+    Node* current = parentNode;
+    while (current->next != nullptr) {
+        current = current->next;
+    }
+    current->next = node;
 }
 
-void load_file()
-{
-  printf("This command is not implemented yet\n");
+Node* LinkedList;
+
+int get_command() {
+    char char_command[1];
+
+    printf("Choose a command:");
+    fgets(char_command, 2, stdin);
+
+    // ascii subtraction method
+    int result = char_command[0] - '0';
+
+    // try getting rid of it and entering 23455
+    // clearing stdin
+    fflush(stdin);
+
+    return result;
 }
 
-void save_in_file()
-{
-  printf("This command is not implemented yet\n");
+void append() {
+    char symbols[80];
+
+    printf("Enter text to append:");
+    fgets(symbols, 80, stdin);
+
+    // strlen(symbols)-1 to avoid \n being added
+    for (int i = 0; i < strlen(symbols)-1; i++) {
+        if (LinkedList == nullptr) {
+            LinkedList = create_node(symbols[i]);
+            continue;
+        }
+        insert(LinkedList, symbols[i]);
+    }
 }
 
-void print_text()
-{
-  printf("This command is not implemented yet\n");
+void start_new_line() {
+    printf("This command is not implemented yet\n");
 }
 
-void insert_by_index()
-{
-  printf("This command is not implemented yet\n");
+void load_file() {
+    printf("This command is not implemented yet\n");
 }
 
-void search()
-{
-  printf("This command is not implemented yet\n");
+void save_in_file() {
+    printf("This command is not implemented yet\n");
 }
 
-void parse_input(int command)
-{
-  switch (command)
-  {
-  case 1:
-    append();
-    break;
-  case 2:
-    start_new_line();
-    break;
-  case 3:
-    load_file();
-    break;
-  case 4:
-    save_in_file();
-    break;
-  case 5:
-    print_text();
-    break;
-  case 6:
-    insert_by_index();
-    break;
-  case 7:
-    search();
-    break;
-  case 8:
-    printf("Exiting...");
-    break;
-  default:
-    printf("No command with number %d\n", command);
-    break;
-  }
+void print_text() {
+    Node* current = LinkedList;
+    while (current != nullptr) {
+        printf("%c", current->value);
+        current = current->next;
+    }
+    printf("\n");
 }
 
-int main()
-{
-  int command;
-  do {
-    printf("Choose command: ");
-    scanf("%d", &command);  
+void insert_by_index() {
+    printf("This command is not implemented yet\n");
+}
 
-    parse_input(command);
-  } while (command != 8);
+void search() {
+    printf("This command is not implemented yet\n");
+}
 
-  return 0;
+void parse_input(int command) {
+    switch (command) {
+        case 1:
+            append();
+            break;
+        case 2:
+            start_new_line();
+            break;
+        case 3:
+            load_file();
+            break;
+        case 4:
+            save_in_file();
+            break;
+        case 5:
+            print_text();
+            break;
+        case 6:
+            insert_by_index();
+            break;
+        case 7:
+            search();
+            break;
+        case 8:
+            printf("Exiting...");
+            break;
+        default:
+            printf("No command with number %d\n", command);
+            break;
+    }
+}
+
+int main() {
+    // for debug to work
+    setbuf(stdout, 0);
+    int command = get_command();
+    while (command != 8) {
+        parse_input(command);
+        command = get_command();
+    }
 }
