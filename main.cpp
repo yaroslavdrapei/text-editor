@@ -58,7 +58,8 @@ void append() {
 }
 
 void start_new_line() {
-    printf("This command is not implemented yet\n");
+    insert(LinkedList, '\n');
+    printf("New line is started\n");
 }
 
 void load_file() {
@@ -120,7 +121,7 @@ void parse_input(int command) {
 
 int main() {
     // for debug to work
-    setbuf(stdout, 0);
+    setbuf(stdout, nullptr);
     int command = get_command();
     while (command != 8) {
         parse_input(command);
