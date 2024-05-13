@@ -62,27 +62,43 @@ void start_new_line() {
 }
 
 void load_file() {
-    printf("This command is not implemented yet\n");
+    FILE* pFile = fopen("text.txt", "r");
+
+    char buffer[255];
+
+    while (fgets(buffer, 255, pFile)) {
+        for (int i = 0; i < strlen(buffer); i++) {
+            if (LinkedList == nullptr) {
+                LinkedList = create_node(buffer[i]);
+                continue;
+            }
+            insert(LinkedList, buffer[i]);
+        }
+    }
+
+    fclose(pFile);
+
+    printf("Text has been loaded successfully\n");
 }
 
 void save_in_file() {
-    FILE* pF = fopen("text.txt", "a");
+    FILE* pFile = fopen("text.txt", "a");
 
-    if (pF == nullptr) {
+    if (pFile == nullptr) {
         printf("Error opening file!");
         return;
     }
 
     Node* current = LinkedList;
     while (current != nullptr) {
-        fprintf(pF, "%c", current->value);
+        fprintf(pFile, "%c", current->value);
         Node* temp = current;
         current = current->next;
         free(temp);
     }
     LinkedList = nullptr;
 
-    fclose(pF);
+    fclose(pFile);
 
     printf("Text has been saved successfully\n");
 }
