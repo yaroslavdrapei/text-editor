@@ -66,7 +66,25 @@ void load_file() {
 }
 
 void save_in_file() {
-    printf("This command is not implemented yet\n");
+    FILE* pF = fopen("text.txt", "a");
+
+    if (pF == nullptr) {
+        printf("Error opening file!");
+        return;
+    }
+
+    Node* current = LinkedList;
+    while (current != nullptr) {
+        fprintf(pF, "%c", current->value);
+        Node* temp = current;
+        current = current->next;
+        free(temp);
+    }
+    LinkedList = nullptr;
+
+    fclose(pF);
+
+    printf("Text has been saved successfully\n");
 }
 
 void print_text() {
