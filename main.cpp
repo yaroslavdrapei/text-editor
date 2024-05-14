@@ -23,7 +23,7 @@ void insert(Node* parentNode, char chr) {
     current->next = node;
 }
 
-Node* LinkedList;
+Node* head;
 
 int get_command() {
     char char_command[1];
@@ -49,11 +49,11 @@ void append() {
 
     // strlen(symbols)-1 to avoid \n being added
     for (int i = 0; i < strlen(symbols)-1; i++) {
-        if (LinkedList == nullptr) {
-            LinkedList = create_node(symbols[i]);
+        if (head == nullptr) {
+            head = create_node(symbols[i]);
             continue;
         }
-        insert(LinkedList, symbols[i]);
+        insert(head, symbols[i]);
     }
 }
 
@@ -68,11 +68,11 @@ void load_file() {
 
     while (fgets(buffer, 255, pFile)) {
         for (int i = 0; i < strlen(buffer); i++) {
-            if (LinkedList == nullptr) {
-                LinkedList = create_node(buffer[i]);
+            if (head == nullptr) {
+                head = create_node(buffer[i]);
                 continue;
             }
-            insert(LinkedList, buffer[i]);
+            insert(head, buffer[i]);
         }
     }
 
@@ -89,14 +89,14 @@ void save_in_file() {
         return;
     }
 
-    Node* current = LinkedList;
+    Node* current = head;
     while (current != nullptr) {
         fprintf(pFile, "%c", current->value);
         Node* temp = current;
         current = current->next;
         free(temp);
     }
-    LinkedList = nullptr;
+    head = nullptr;
 
     fclose(pFile);
 
@@ -104,7 +104,7 @@ void save_in_file() {
 }
 
 void print_text() {
-    Node* current = LinkedList;
+    Node* current = head;
     while (current != nullptr) {
         printf("%c", current->value);
         current = current->next;
@@ -126,7 +126,7 @@ void insert_by_index() {
     fflush(stdin);
 
     int idx = 0;
-    Node* current = LinkedList;
+    Node* current = head;
 
     while (current != nullptr) {
         if (idx == index) {
