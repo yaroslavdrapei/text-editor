@@ -113,7 +113,34 @@ void print_text() {
 }
 
 void insert_by_index() {
-    printf("This command is not implemented yet\n");
+    int index;
+    printf("Choose index:");
+    scanf("%d", &index);
+
+    fflush(stdin);
+
+    char symbols[80];
+    printf("Enter text to insert:");
+    fgets(symbols, 80, stdin);
+
+    fflush(stdin);
+
+    int idx = 0;
+    Node* current = LinkedList;
+
+    while (current != nullptr) {
+        if (idx == index) {
+            Node* prev = current->next;
+            for (int i = 0; i < strlen(symbols) - 1; i++) {
+                current->next = create_node(symbols[i]);
+                current = current->next;
+            }
+            current->next = prev;
+            break;
+        }
+        idx++;
+        current = current->next;
+    }
 }
 
 void search() {
