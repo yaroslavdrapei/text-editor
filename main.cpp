@@ -55,6 +55,14 @@ void arr_clear(DynamicArray* dynamicArray) {
     dynamicArray->array = (char*)calloc(dynamicArray->capacity, sizeof(char));
 }
 
+void arr2d_clear(DynamicArray** d2DynamicArray, int* current_line) {
+    for (int i = 0; i <= *current_line; i++) {
+        free(d2DynamicArray[i]);
+    }
+
+    *current_line = -1;
+}
+
 void welcome() {
     printf("Welcome to text editor!\n");
     printf("1 - append text\n");
@@ -103,40 +111,56 @@ void start_new_line(DynamicArray** lines, int* current_line) {
     *current_line += 1;
     lines[*current_line] = (DynamicArray*)calloc(1, sizeof(DynamicArray));
     create_dynamic_array(lines[*current_line]);
-    printf("%d\n", *current_line);
+    printf("New line is started\n");
 }
 
-void load_file(DynamicArray* line) {
-    FILE* pFile = fopen("text.txt", "r");
+void load_file(DynamicArray** lines, int* current_line) {
+    FILE* file = fopen("text.txt", "r");
 
-    char buffer[255];
-
-    while (fgets(buffer, 255, pFile)) {
-        for (int i = 0; i < strlen(buffer); i++) {
-            arr_append(line, buffer[i]);
-        }
-    }
-
-    fclose(pFile);
-
-    printf("Text has been loaded successfully\n");
-}
-
-void save_in_file(DynamicArray* line) {
-    FILE* pFile = fopen("text.txt", "w");
-
-    if (pFile == nullptr) {
+    if (file == nullptr) {
         printf("Error opening file!");
         return;
     }
 
-    for (int i = 0; i < line->size; i++) {
-        fprintf(pFile, "%c", line->array[i]);
+    char buffer[255];
+
+    arr2d_clear(lines, current_line);
+    start_new_line(lines, current_line);
+
+    for (int i = 0; i <= *current_line; i++) {
+        DynamicArray* line = lines[i];
+        while (fgets(buffer, 255, file)) {
+            for (int j = 0; j < strlen(buffer); j++) {
+                arr_append(line, buffer[j]);
+            }
+        }
     }
 
-    arr_clear(line);
+    fclose(file);
 
-    fclose(pFile);
+    printf("Text has been loaded successfully\n");
+}
+
+void save_in_file(DynamicArray** lines, int* current_line) {
+    FILE* file = fopen("text.txt", "w");
+
+    if (file == nullptr) {
+        printf("Error opening file!");
+        return;
+    }
+
+    for (int i = 0; i <= *current_line; i++) {
+        DynamicArray* line = lines[i];
+        for (int j = 0; j < line->size; j++) {
+            fprintf(file, "%c", line->array[j]);
+        }
+
+        // prevent extra new line
+        if (i == *current_line) continue;
+        fprintf(file, "%c", '\n');
+    }
+
+    fclose(file);
 
     printf("Text has been saved successfully\n");
 }
@@ -203,10 +227,10 @@ int main() {
                 start_new_line(lines, &current_line);
                 break;
             case 3:
-                load_file(lines[current_line]);
+                load_file(lines, &current_line);
                 break;
             case 4:
-                save_in_file(lines[current_line]);
+                save_in_file(lines, &current_line);
                 break;
             case 5:
                 print_text(lines, current_line);
