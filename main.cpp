@@ -112,7 +112,7 @@ void load_file() {
 }
 
 void save_in_file() {
-    FILE* pFile = fopen("text.txt", "a");
+    FILE* pFile = fopen("text.txt", "w");
 
     if (pFile == nullptr) {
         printf("Error opening file!");
