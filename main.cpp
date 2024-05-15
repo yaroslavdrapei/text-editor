@@ -2,28 +2,54 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Node {
-    char value;
-    struct Node* next;
-} Node;
+typedef struct DynamicArray {
+    unsigned int capacity = 16;
+    char* array = (char*)calloc(capacity, sizeof(char));
+    unsigned int size = 0;
+} DynamicArray;
 
-Node* create_node(char chr) {
-    Node* node = (Node*)malloc(sizeof(Node));
-    node->value = chr;
-    node->next = nullptr;
-    return node;
+void arr_resize(DynamicArray* dynamicArray) {
+    dynamicArray->capacity *= 2;
+    dynamicArray->array = (char*)realloc(dynamicArray->array, dynamicArray->capacity);
 }
 
-void insert(Node* parentNode, char chr) {
-    Node* node = create_node(chr);
-    Node* current = parentNode;
-    while (current->next != nullptr) {
-        current = current->next;
+void arr_append(DynamicArray* dynamicArray, char chr) {
+    if (dynamicArray->size > dynamicArray->capacity) {
+        arr_resize(dynamicArray);
     }
-    current->next = node;
+
+    dynamicArray->array[dynamicArray->size] = chr;
+    dynamicArray->size++;
 }
 
-Node* head;
+void arr_insert(DynamicArray* dynamicArray, char chr, unsigned int index) {
+    if (index > dynamicArray->size) {
+        printf("Index is too large");
+        return;
+    }
+
+    if (dynamicArray->size > dynamicArray->capacity) {
+        arr_resize(dynamicArray);
+    }
+
+    for (int i = dynamicArray->size; i >= 0; i--) {
+        if (index == i) {
+            dynamicArray->array[i] = chr;
+            dynamicArray->size++;
+            break;
+        }
+        dynamicArray->array[i] = dynamicArray->array[i-1];
+    }
+}
+
+void arr_clear(DynamicArray* dynamicArray) {
+    free(dynamicArray->array);
+    dynamicArray->size = 0;
+    dynamicArray->capacity = 16;
+    dynamicArray->array = (char*)calloc(dynamicArray->capacity, sizeof(char));
+}
+
+DynamicArray characters;
 
 int get_command() {
     char char_command[1];
@@ -47,13 +73,9 @@ void append() {
     printf("Enter text to append:");
     fgets(symbols, 80, stdin);
 
-    // strlen(symbols)-1 to avoid \n being added
+    // -1 to avoid \n being added
     for (int i = 0; i < strlen(symbols)-1; i++) {
-        if (head == nullptr) {
-            head = create_node(symbols[i]);
-            continue;
-        }
-        insert(head, symbols[i]);
+        arr_append(&characters, symbols[i]);
     }
 }
 
@@ -68,11 +90,7 @@ void load_file() {
 
     while (fgets(buffer, 255, pFile)) {
         for (int i = 0; i < strlen(buffer); i++) {
-            if (head == nullptr) {
-                head = create_node(buffer[i]);
-                continue;
-            }
-            insert(head, buffer[i]);
+            arr_append(&characters, buffer[i]);
         }
     }
 
@@ -89,14 +107,11 @@ void save_in_file() {
         return;
     }
 
-    Node* current = head;
-    while (current != nullptr) {
-        fprintf(pFile, "%c", current->value);
-        Node* temp = current;
-        current = current->next;
-        free(temp);
+    for (int i = 0; i < characters.size; i++) {
+        fprintf(pFile, "%c", characters.array[i]);
     }
-    head = nullptr;
+
+    arr_clear(&characters);
 
     fclose(pFile);
 
@@ -104,11 +119,10 @@ void save_in_file() {
 }
 
 void print_text() {
-    Node* current = head;
-    while (current != nullptr) {
-        printf("%c", current->value);
-        current = current->next;
+    for (int i = 0; i < characters.size; i++) {
+        printf("%c", characters.array[i]);
     }
+
     printf("\n");
 }
 
@@ -125,21 +139,8 @@ void insert_by_index() {
 
     fflush(stdin);
 
-    int idx = 0;
-    Node* current = head;
-
-    while (current != nullptr) {
-        if (idx == index) {
-            Node* prev = current->next;
-            for (int i = 0; i < strlen(symbols) - 1; i++) {
-                current->next = create_node(symbols[i]);
-                current = current->next;
-            }
-            current->next = prev;
-            break;
-        }
-        idx++;
-        current = current->next;
+    for (int i = 0; i < strlen(symbols)-1; i++) {
+        arr_insert(&characters, symbols[i], index++);
     }
 }
 
