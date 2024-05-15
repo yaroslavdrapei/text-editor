@@ -64,13 +64,13 @@ void welcome() {
 }
 
 int get_command() {
-    char char_command[1];
+    char char_command[2];
 
     printf("Choose a command:");
-    fgets(char_command, 2, stdin);
+    fgets(char_command, 3, stdin);
 
     // ascii subtraction method
-    int result = char_command[0] - '0';
+    int result = atoi(char_command);
 
     // try getting rid of it and entering 23455
     // clearing stdin
