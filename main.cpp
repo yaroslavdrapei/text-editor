@@ -3,10 +3,16 @@
 #include <string.h>
 
 typedef struct DynamicArray {
-    unsigned int capacity = 16;
-    char* array = (char*)calloc(capacity, sizeof(char));
-    unsigned int size = 0;
+    unsigned int capacity;
+    char* array;
+    unsigned int size;
 } DynamicArray;
+
+void create_dynamic_array(DynamicArray* dynamicArray) {
+    dynamicArray->capacity = 16;
+    dynamicArray->array = (char*)calloc(dynamicArray->capacity, sizeof(char));
+    dynamicArray->size = 0;
+}
 
 void arr_resize(DynamicArray* dynamicArray) {
     dynamicArray->capacity *= 2;
@@ -49,8 +55,6 @@ void arr_clear(DynamicArray* dynamicArray) {
     dynamicArray->array = (char*)calloc(dynamicArray->capacity, sizeof(char));
 }
 
-DynamicArray characters;
-
 void welcome() {
     printf("Welcome to text editor!\n");
     printf("1 - append text\n");
@@ -79,7 +83,7 @@ int get_command() {
     return result;
 }
 
-void append() {
+void append(DynamicArray* line) {
     char symbols[80];
 
     printf("Enter text to append:");
@@ -87,22 +91,29 @@ void append() {
 
     // -1 to avoid \n being added
     for (int i = 0; i < strlen(symbols)-1; i++) {
-        arr_append(&characters, symbols[i]);
+        arr_append(line, symbols[i]);
     }
 }
 
-void start_new_line() {
-    printf("This command is not implemented yet\n");
+void start_new_line(DynamicArray** lines, int* current_line) {
+    if (*current_line == 19) {
+        printf("You can't create more lines\n");
+        return;
+    }
+    *current_line += 1;
+    lines[*current_line] = (DynamicArray*)calloc(1, sizeof(DynamicArray));
+    create_dynamic_array(lines[*current_line]);
+    printf("%d\n", *current_line);
 }
 
-void load_file() {
+void load_file(DynamicArray* line) {
     FILE* pFile = fopen("text.txt", "r");
 
     char buffer[255];
 
     while (fgets(buffer, 255, pFile)) {
         for (int i = 0; i < strlen(buffer); i++) {
-            arr_append(&characters, buffer[i]);
+            arr_append(line, buffer[i]);
         }
     }
 
@@ -111,7 +122,7 @@ void load_file() {
     printf("Text has been loaded successfully\n");
 }
 
-void save_in_file() {
+void save_in_file(DynamicArray* line) {
     FILE* pFile = fopen("text.txt", "w");
 
     if (pFile == nullptr) {
@@ -119,26 +130,26 @@ void save_in_file() {
         return;
     }
 
-    for (int i = 0; i < characters.size; i++) {
-        fprintf(pFile, "%c", characters.array[i]);
+    for (int i = 0; i < line->size; i++) {
+        fprintf(pFile, "%c", line->array[i]);
     }
 
-    arr_clear(&characters);
+    arr_clear(line);
 
     fclose(pFile);
 
     printf("Text has been saved successfully\n");
 }
 
-void print_text() {
-    for (int i = 0; i < characters.size; i++) {
-        printf("%c", characters.array[i]);
+void print_text(DynamicArray* line) {
+    for (int i = 0; i < line->size; i++) {
+        printf("%c", line->array[i]);
     }
 
     printf("\n");
 }
 
-void insert_by_index() {
+void insert_by_index(DynamicArray* line) {
     int index;
     printf("Choose index:");
     scanf("%d", &index);
@@ -152,7 +163,7 @@ void insert_by_index() {
     fflush(stdin);
 
     for (int i = 0; i < strlen(symbols)-1; i++) {
-        arr_insert(&characters, symbols[i], index++);
+        arr_insert(line, symbols[i], index++);
     }
 }
 
@@ -160,45 +171,43 @@ void search() {
     printf("This command is not implemented yet\n");
 }
 
-void parse_input(int command) {
-    switch (command) {
-        case 1:
-            append();
-            break;
-        case 2:
-            start_new_line();
-            break;
-        case 3:
-            load_file();
-            break;
-        case 4:
-            save_in_file();
-            break;
-        case 5:
-            print_text();
-            break;
-        case 6:
-            insert_by_index();
-            break;
-        case 7:
-            search();
-            break;
-        case 8:
-            printf("Exiting...");
-            break;
-        default:
-            printf("No command with number %d\n", command);
-            break;
-    }
-}
-
 int main() {
     // for debug to work
     setbuf(stdout, 0);
+
+    DynamicArray** lines = (DynamicArray**)calloc(20, sizeof(DynamicArray*));
+    int current_line = -1;
+    start_new_line(lines, &current_line);
+
     welcome();
     int command = get_command();
     while (command != 8) {
-        parse_input(command);
+        switch (command) {
+            case 1:
+                append(lines[current_line]);
+                break;
+            case 2:
+                start_new_line(lines, &current_line);
+                break;
+            case 3:
+                load_file(lines[current_line]);
+                break;
+            case 4:
+                save_in_file(lines[current_line]);
+                break;
+            case 5:
+                print_text(lines[current_line]);
+                break;
+            case 6:
+                insert_by_index(lines[current_line]);
+                break;
+            case 7:
+                search();
+                break;
+            default:
+                printf("No command with number %d\n", command);
+                break;
+        }
         command = get_command();
     }
 }
