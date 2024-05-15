@@ -51,6 +51,18 @@ void arr_clear(DynamicArray* dynamicArray) {
 
 DynamicArray characters;
 
+void welcome() {
+    printf("Welcome to text editor!\n");
+    printf("1 - append text\n");
+    printf("2 - start new line\n");
+    printf("3 - load file\n");
+    printf("4 - save to file\n");
+    printf("5 - print text\n");
+    printf("6 - insert by index\n");
+    printf("7 - search\n");
+    printf("8 - exit\n");
+}
+
 int get_command() {
     char char_command[1];
 
@@ -183,6 +195,7 @@ void parse_input(int command) {
 int main() {
     // for debug to work
     setbuf(stdout, 0);
+    welcome();
     int command = get_command();
     while (command != 8) {
         parse_input(command);
