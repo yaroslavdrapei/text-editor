@@ -57,7 +57,8 @@ void arr_clear(DynamicArray* dynamicArray) {
 
 void arr2d_clear(DynamicArray** d2DynamicArray, int* current_line) {
     for (int i = 0; i <= *current_line; i++) {
-        free(d2DynamicArray[i]);
+        arr_clear(d2DynamicArray[i]);
+        free(d2DynamicArray);
     }
 
     *current_line = -1;
