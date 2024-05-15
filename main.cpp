@@ -30,7 +30,7 @@ void arr_append(DynamicArray* dynamicArray, char chr) {
 
 void arr_insert(DynamicArray* dynamicArray, char chr, unsigned int index) {
     if (index > dynamicArray->size) {
-        printf("Index is too large");
+        printf("Index is too large\n");
         return;
     }
 
@@ -141,15 +141,28 @@ void save_in_file(DynamicArray* line) {
     printf("Text has been saved successfully\n");
 }
 
-void print_text(DynamicArray* line) {
-    for (int i = 0; i < line->size; i++) {
-        printf("%c", line->array[i]);
+void print_text(DynamicArray** lines, int current_line) {
+    for (int i = 0; i <= current_line; i++) {
+        DynamicArray* line = lines[i];
+        for (int j = 0; j < line->size; j++) {
+            printf("%c", line->array[j]);
+        }
+        printf("\n");
     }
-
-    printf("\n");
 }
 
-void insert_by_index(DynamicArray* line) {
+void insert_by_index_and_line(DynamicArray** lines, int current_line) {
+    int line_index;
+    printf("Choose line:");
+    scanf("%d", &line_index);
+
+    fflush(stdin);
+
+    if (line_index > current_line) {
+        printf("This line has not been created\n");
+        return;
+    }
+
     int index;
     printf("Choose index:");
     scanf("%d", &index);
@@ -163,7 +176,7 @@ void insert_by_index(DynamicArray* line) {
     fflush(stdin);
 
     for (int i = 0; i < strlen(symbols)-1; i++) {
-        arr_insert(line, symbols[i], index++);
+        arr_insert(lines[line_index], symbols[i], index++);
     }
 }
 
@@ -196,10 +209,10 @@ int main() {
                 save_in_file(lines[current_line]);
                 break;
             case 5:
-                print_text(lines[current_line]);
+                print_text(lines, current_line);
                 break;
             case 6:
-                insert_by_index(lines[current_line]);
+                insert_by_index_and_line(lines, current_line);
                 break;
             case 7:
                 search();
