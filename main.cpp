@@ -11,6 +11,7 @@ typedef struct DynamicArray {
 void create_dynamic_array(DynamicArray* dynamicArray) {
     dynamicArray->capacity = 16;
     dynamicArray->array = (char*)calloc(dynamicArray->capacity, sizeof(char));
+    dynamicArray->array[0] = '\0';
     dynamicArray->size = 0;
 }
 
@@ -20,12 +21,14 @@ void arr_resize(DynamicArray* dynamicArray) {
 }
 
 void arr_append(DynamicArray* dynamicArray, char chr) {
-    if (dynamicArray->size > dynamicArray->capacity) {
+    // +1 for \0 char
+    if (dynamicArray->size+1 > dynamicArray->capacity) {
         arr_resize(dynamicArray);
     }
 
     dynamicArray->array[dynamicArray->size] = chr;
     dynamicArray->size++;
+    dynamicArray->array[dynamicArray->size] = '\0';
 }
 
 void arr_insert(DynamicArray* dynamicArray, char chr, unsigned int index) {
