@@ -64,6 +64,13 @@ void arr2d_clear(DynamicArray** d2DynamicArray, int* current_line) {
     *current_line = -1;
 }
 
+void get_substring(int start, int length, char string[], char* result) {
+    for (int i = start; i < start+length; i++) {
+        result[i-start] = string[i];
+    }
+    result[length] = '\0';
+}
+
 void welcome() {
     printf("Welcome to text editor!\n");
     printf("1 - append text\n");
@@ -134,12 +141,15 @@ void load_file(DynamicArray** lines, int* current_line) {
     arr2d_clear(lines, current_line);
     start_new_line(lines, current_line);
 
-    for (int i = 0; i <= *current_line; i++) {
-        DynamicArray* line = lines[i];
-        while (fgets(buffer, 255, file)) {
-            for (int j = 0; j < strlen(buffer); j++) {
-                arr_append(line, buffer[j]);
+    DynamicArray* line = lines[*current_line];
+    while (fgets(buffer, 255, file)) {
+        for (int j = 0; j < strlen(buffer); j++) {
+            if (buffer[j] == '\n') {
+                start_new_line(lines, current_line);
+                line = lines[*current_line];
+                continue;
             }
+            arr_append(line, buffer[j]);
         }
     }
 
@@ -218,14 +228,43 @@ void insert_by_index_and_line(DynamicArray** lines, int current_line) {
     }
 }
 
-void search() {
-    printf("This command is not implemented yet\n");
+void search(DynamicArray** lines, int current_line) {
+    char target_substr[80];
+    printf("Enter text to search:");
+    fgets(target_substr, 80, stdin);
+
+    target_substr[strlen(target_substr)-1] = '\0';
+    fflush(stdin);
+
+
+    bool wasFound = false;
+
+    for (int i = 0; i <= current_line; i++) {
+        DynamicArray* line = lines[i];
+
+        for (int j = 0; j < line->size; j++) {
+            char substr[strlen(target_substr)];
+
+            get_substring(j, strlen(target_substr), line->array, substr);
+
+            if (!strcmp(substr, target_substr)) {
+                if (!wasFound) {
+                    printf("Text is present in following positions:\n");
+                    wasFound = true;
+                }
+                printf("%d %d\n", i, j);
+            }
+        }
+    }
+
+    if (!wasFound) {
+        printf("\"%s\" was not found\n", target_substr);
+    }
 }
 
 int main() {
     // for debug to work
     setbuf(stdout, 0);
-
     DynamicArray** lines = (DynamicArray**)calloc(20, sizeof(DynamicArray*));
     int current_line = -1;
     start_new_line(lines, &current_line);
@@ -254,7 +293,7 @@ int main() {
                 insert_by_index_and_line(lines, current_line);
                 break;
             case 7:
-                search();
+                search(lines, current_line);
                 break;
             default:
                 printf("No command with number %d\n", command);
