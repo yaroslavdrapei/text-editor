@@ -50,15 +50,12 @@ void arr_insert(DynamicArray* dynamicArray, char chr, unsigned int index) {
 
 void arr_clear(DynamicArray* dynamicArray) {
     free(dynamicArray->array);
-    dynamicArray->size = 0;
-    dynamicArray->capacity = 16;
-    dynamicArray->array = (char*)calloc(dynamicArray->capacity, sizeof(char));
+    create_dynamic_array(dynamicArray);
 }
 
 void arr2d_clear(DynamicArray** d2DynamicArray, int* current_line) {
     for (int i = 0; i <= *current_line; i++) {
         arr_clear(d2DynamicArray[i]);
-        free(d2DynamicArray);
     }
 
     *current_line = -1;
@@ -112,11 +109,17 @@ void start_new_line(DynamicArray** lines, int* current_line) {
     *current_line += 1;
     lines[*current_line] = (DynamicArray*)calloc(1, sizeof(DynamicArray));
     create_dynamic_array(lines[*current_line]);
-    printf("New line is started\n");
 }
 
 void load_file(DynamicArray** lines, int* current_line) {
-    FILE* file = fopen("text.txt", "r");
+    char path[80];
+    printf("Enter the file name for loading:");
+    fgets(path, 80, stdin);
+
+    path[strlen(path)-1] = '\0';
+    fflush(stdin);
+
+    FILE* file = fopen(path, "r");
 
     if (file == nullptr) {
         printf("Error opening file!");
@@ -143,7 +146,14 @@ void load_file(DynamicArray** lines, int* current_line) {
 }
 
 void save_in_file(DynamicArray** lines, int* current_line) {
-    FILE* file = fopen("text.txt", "w");
+    char path[80];
+    printf("Enter the file name for saving:");
+    fgets(path, 80, stdin);
+
+    path[strlen(path)-1] = '\0';
+    fflush(stdin);
+
+    FILE* file = fopen(path, "w");
 
     if (file == nullptr) {
         printf("Error opening file!");
@@ -226,6 +236,7 @@ int main() {
                 break;
             case 2:
                 start_new_line(lines, &current_line);
+                printf("New line is started\n");
                 break;
             case 3:
                 load_file(lines, &current_line);
