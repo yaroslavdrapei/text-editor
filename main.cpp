@@ -10,7 +10,7 @@ typedef struct DynamicArray {
 
 void create_dynamic_array(DynamicArray* dynamicArray) {
     dynamicArray->capacity = 16;
-    dynamicArray->array = (char*)calloc(dynamicArray->capacity, sizeof(char));
+    dynamicArray->array = (char*)malloc(dynamicArray->capacity*sizeof(char));
     dynamicArray->array[0] = '\0';
     dynamicArray->size = 0;
 }
@@ -117,7 +117,7 @@ void start_new_line(DynamicArray** lines, int* current_line) {
         return;
     }
     *current_line += 1;
-    lines[*current_line] = (DynamicArray*)calloc(1, sizeof(DynamicArray));
+    lines[*current_line] = (DynamicArray*)malloc(sizeof(DynamicArray));
     create_dynamic_array(lines[*current_line]);
 }
 
@@ -265,7 +265,7 @@ void search(DynamicArray** lines, int current_line) {
 int main() {
     // for debug to work
     setbuf(stdout, 0);
-    DynamicArray** lines = (DynamicArray**)calloc(20, sizeof(DynamicArray*));
+    DynamicArray** lines = (DynamicArray**)malloc(20*sizeof(DynamicArray*));
     int current_line = -1;
     start_new_line(lines, &current_line);
 
