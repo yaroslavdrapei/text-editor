@@ -132,7 +132,7 @@ void load_file(DynamicArray** lines, int* current_line) {
     FILE* file = fopen(path, "r");
 
     if (file == nullptr) {
-        printf("Error opening file!");
+        printf("Error opening file!\n");
         return;
     }
 
@@ -169,7 +169,7 @@ void save_in_file(DynamicArray** lines, int* current_line) {
     FILE* file = fopen(path, "w");
 
     if (file == nullptr) {
-        printf("Error opening file!");
+        printf("Error opening file!\n");
         return;
     }
 
